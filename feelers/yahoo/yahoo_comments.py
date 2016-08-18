@@ -9,10 +9,11 @@ YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/Comment
 
 def main():
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
-	comments = get_comments(uuids)
+	comments = get_yahoo_comments(uuids)
 
-# take in a dictionry of {uuid => {title, url}}
-def get_comments(uuids):
+# take in a dictionary of {uuid => {title, url}}
+# return dictionary of {uuid => {"comments": comment_json}}
+def get_yahoo_comments(uuids):
 	comments = {}
 	for uuid in uuids:
 		r = requests.get(YAHOO_COMMENT_SERVICE_URL % uuid)
