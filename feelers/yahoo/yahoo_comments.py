@@ -11,21 +11,35 @@ def main():
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
 	comments = get_yahoo_comments(uuids)
 
+# GET COMMENTS FOR ARTICLES
 # take in a dictionary of {uuid => {title, url}}
 # return dictionary of {uuid => {"comments": comment_json}}
 def get_yahoo_comments(uuids):
 	comments = {}
 	for uuid in uuids:
-		r = requests.get(YAHOO_COMMENT_SERVICE_URL % uuid)
-		comment_json = json.loads(r.text)
-		comments[uuid] = {"comments": comment_json}
-
+		comment_json = get_yahoo_comments_for_article(uuid)
+		comments[uuid] = comment_json
+		
 	return comments
 
-def get_uuids(yahoo_link):
-	pattern = '({"context":.+});'
+def get_yahoo_comments_for_article(uuid):
+	r = requests.get(YAHOO_COMMENT_SERVICE_URL % uuid)
+	comment_json = json.loads(r.text)
+	return comment_json
 
-	r = requests.get(yahoo_link)	
+# GET ARTICLE INFORMATION
+def get_uuids(yahoo_link):
+	# stream items have their own article id and have 
+	# a list of storyline items which have their own article ids
+	def get_stream_items(yahoo_json):
+		stream_items = yahoo_json['context']['dispatcher']['stores']['StreamStore']['streams']
+		stream_items = stream_items[stream_items.keys()[0]]
+		stream_items = stream_items['data']['stream_items']
+		return stream_items
+
+
+	pattern = '({"context":.+});'
+	r = requests.get(yahoo_link)
 	match = re.findall(pattern, r.text)[0]
 	yahoo_json = json.loads(match)
 	stream_items = get_stream_items(yahoo_json)
@@ -43,15 +57,6 @@ def get_uuids(yahoo_link):
 
 	return article_uuids
 
-# sometimes there are uuids that aren't part of Yahoo's service??
-def is_yahoo_uuid():
-	pass	
-
-def get_stream_items(yahoo_json):
-	stream_items = yahoo_json['context']['dispatcher']['stores']['StreamStore']['streams']
-	stream_items = stream_items[stream_items.keys()[0]]
-	stream_items = stream_items['data']['stream_items']
-	return stream_items
 
 if __name__ == "__main__":
 	main()
