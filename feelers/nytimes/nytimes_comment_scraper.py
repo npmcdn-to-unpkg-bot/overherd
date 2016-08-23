@@ -48,8 +48,8 @@ if __name__ == "__main__":
     article_url='http://opinionator.blogs.nytimes.com/2012/04/17/whos-afraid-of-greater-luxembourg/'#  URL of the article you want to get
     comments=nytimes_comments(article_url)
 
-    for comment in comments: # loop through the list
-        print comment['commentBody'] # print out the comment text
+    # for comment in comments: # loop through the list
+    #     print comment['commentBody'] # print out the comment text
         
-    print comment.keys()
+    # print comment.keys()
     

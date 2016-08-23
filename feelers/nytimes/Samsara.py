@@ -1,6 +1,7 @@
 from nytimesarticle import articleAPI
 import sys
 from time import sleep
+from settings import *
 
 # Example usage: "python Samsara virginia 20150827 20150827 0-0"
 # where virginia is the keyword, 20150827 is the beginning and end date, and 0-0 indicates pages 0 to 0
@@ -34,9 +35,6 @@ hl: 			boolean for highlighting
 facet_field: 	see the article search api
 callback: 		name of the function API call results will be passed to
 """
-
-# Andrew's key
-NYT_API_KEY = "a5a55bf350d53e96601488b6d633a68f:4:61276569"
 
 class Samsara(object):
 	def __init__(self, api_key=NYT_API_KEY):
