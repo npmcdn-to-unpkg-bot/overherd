@@ -3,6 +3,7 @@ import Samsara as nyt_arts
 
 import requests
 import json
+import pdb
 
 NYTIMES_COMMENTS_API = "http://api.nytimes.com/svc/community/v3/user-content/url.json"
 
@@ -41,5 +42,6 @@ def get_nytimes_comments(keyword, begin_date, end_date):
 	return comments
 
 if __name__ == "__main__":
-	# comments = get_nytimes_comments("virginia", "20150827", "20150827")
-	get_nytimes_comments_for_article("http://opinionator.blogs.nytimes.com/2012/04/17/whos-afraid-of-greater-luxembourg/")
+	comments = get_nytimes_comments("virginia", "20150827", "20150827")
+	# comm = get_nytimes_comments_for_article("http://opinionator.blogs.nytimes.com/2012/04/17/whos-afraid-of-greater-luxembourg/")
+	pdb.set_trace()
