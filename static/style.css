@@ -1,0 +1,33 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+}
+
+/* top bar */ 
+
+form.search, div.instructions {
+  display:inline-block;
+  width:40%;
+}
+
+div.instructions {
+  position:absolute;
+  padding-top:20px;
+}
+
+img#loading {
+  padding: 0px 0px 20px 0px;
+  z-index:-1;
+}
+
+form.search {
+  padding-top: 15px;
+  padding-left: 75px;
+}
+
+input#search-bar {
+  display:block;
+  margin: 0 auto;
+  float: left;
+}

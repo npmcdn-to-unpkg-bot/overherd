@@ -1,4 +1,25 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h1>Hello world</h1>
+
+  <!-- SEARCH BAR -->
+    <div class="top-bar">
+    	<form class="search" id="search-group" method="GET" onsubmit="search_data(); return false;">
+  			<input type="text" placeholder="Search" id="search-bar" class="form-control col-lg-8" />
+        <!-- Way to get it to let you type enter and submit -->
+        <input type="submit" style="position: absolute; left: -9999px"/>
+    	</form>
+    </div>
+
+    <!-- Text -->
+    <div class="row content-text">
+    	<div class="col-md-6 articles-text"></div>
+    	<div class="col-md-6 comments-text"></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row charts">
+    	<div class="col-md-6 articles-chart"></div>
+    	<div class="col-md-6 comments-chart"></div>
+    </div>
+
 {% endblock %}
