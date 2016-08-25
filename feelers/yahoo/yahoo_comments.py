@@ -4,15 +4,6 @@ from bs4 import BeautifulSoup
 import re
 import pdb
 
-# u'thumbsUpCount'
-# u'replyCount', 
-# u'thumbsDownCount'
-# creator / userID
-# replyCount
-# commentBody / content
-# userLocation
-# replies
-
 YAHOO_NEWS_URLS = ["https://www.yahoo.com/news/"]
 YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/CommentsService.comments;count=100;publisher=news-en-US;sortBy=highestRated;uuid=%s?bkt=Headline-Testing-Control&dev_info=0&device=desktop&intl=us&lang=en-US&site=fp&returnMeta=true'
 
@@ -28,7 +19,7 @@ def get_yahoo_comments(uuids):
 	comments = {}
 	for uuid in uuids:
 		comment_json = get_yahoo_comments_for_article(uuid)
-		comments[uuid] = comment_json
+		comments[uuid] = {"article_headline": uuids[uuid]['title'], "comments": comment_json}
 		
 	return comments
 
