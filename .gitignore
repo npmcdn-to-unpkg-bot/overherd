@@ -1,1 +1,2 @@
-feelers/nytimes/settings.py
+feelers/nytimes/settings.py*
+feelers/yahoo/db_settings.py*
