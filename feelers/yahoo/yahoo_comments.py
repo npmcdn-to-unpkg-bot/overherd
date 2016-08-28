@@ -54,7 +54,7 @@ def upload_comments_to_database(comments):
 
 		for comment in comments_for_database_upload:
 			query = sql_string.format(comment['yahoo_uuid'], comment['article_headline'], comment['article_url'], comment['comment_text'], comment['reply_count'], comment['thumbs_up_count'], comment['thumbs_down_count'], comment['author'], comment['created_on']) 
-			print "EXECUTING: " + query
+			print "EXECUTING: " + comment['comment_id']
 			cursor.execute(query)
 	except:
 		print "PROBLEMS CONNECTING TO DATABASE"
