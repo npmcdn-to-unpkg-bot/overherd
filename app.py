@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('home.html')
+	return render_template('home.html')
 
 @app.route('/samsara')
 def get_all_comments():
@@ -19,4 +19,5 @@ def get_all_comments():
 	end_date = request.args.get('end_date')
 
 if __name__ == '__main__':
-    app.run(debug=False)
+	port = int(os.environ.get("PORT", 5000))
+	app.run(host='0.0.0.0', port=port)
