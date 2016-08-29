@@ -18,6 +18,5 @@ def get_all_comments():
 	begin_date = request.args.get('begin_date')
 	end_date = request.args.get('end_date')
 
-
 if __name__ == '__main__':
     app.run(debug=True)
