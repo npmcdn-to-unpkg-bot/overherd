@@ -10,11 +10,11 @@ try:
 except:
 	import os
 	DB_ENDPOINT = os.environ['DB_ENDPOINT']
-	DB_PORT = os.environ['DB_PORT']
+	DB_PORT = int(os.environ['DB_PORT'])
 	DB_USERNAME = os.environ['DB_USERNAME']
 	DB_PASSWORD = os.environ['DB_PASSWORD']
 	DB_DATABASE = os.environ['DB_DATABASE']
-	
+
 YAHOO_NEWS_URLS = ["https://www.yahoo.com/news/"]
 YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/CommentsService.comments;count=100;publisher=news-en-US;sortBy=highestRated;uuid=%s?bkt=Headline-Testing-Control&dev_info=0&device=desktop&intl=us&lang=en-US&site=fp&returnMeta=true'
 
