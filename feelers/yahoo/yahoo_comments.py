@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import psycopg2 
 from datetime import datetime
+import pdb
 
 try: 
 	from db_settings import *
@@ -16,11 +17,12 @@ except:
 	DB_DATABASE = os.environ['DB_DATABASE']
 
 YAHOO_NEWS_URLS = ["https://www.yahoo.com/news/"]
-YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/CommentsService.comments;count=100;publisher=news-en-US;sortBy=highestRated;uuid=%s?bkt=Headline-Testing-Control&dev_info=0&device=desktop&intl=us&lang=en-US&site=fp&returnMeta=true'
+YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/CommentsService.comments;count=10;publisher=news-en-US;sortBy=highestRated;uuid={}?bkt=Headline-Testing-Control&dev_info=0&device=desktop&intl=us&lang=en-US&partner=none&region=US&site=fp&tz=America%2FLos_Angeles&ver=2.0.1738001&returnMeta=true'
 
 def main():
 	print "Getting UUIDs... "
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
+	uuids = {uuids.keys()[10]: uuids[uuids.keys()[10]]}
 	print "Getting comments..."
 	comments = get_yahoo_comments(uuids)
 	print "Database..."
@@ -55,15 +57,23 @@ def upload_comments_to_database(comments):
 		 % (DB_DATABASE, DB_USERNAME, DB_ENDPOINT, DB_PORT, DB_PASSWORD))
 
 	   	cursor = conn.cursor()
+	   	print "Connected to database."
 
-		sql_string = \
-			u"INSERT INTO yahoo_comments (yahoo_uuid,article_headline,article_url,comment_text,reply_count,thumbs_up_count,thumbs_down_count,author,created_on) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}') "
+		sql_string = u"""
+			INSERT INTO yahoo_comments 
+			(comment_id,yahoo_uuid,article_headline,article_url,comment_text,reply_count,thumbs_up_count,thumbs_down_count,author,created_on) 
+			VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}')"""
 		sql_string += "ON CONFLICT (comment_id) DO NOTHING"
 
 		for comment in comments_for_database_upload:
-			query = sql_string.format(comment['yahoo_uuid'], comment['article_headline'], comment['article_url'], comment['comment_text'], comment['reply_count'], comment['thumbs_up_count'], comment['thumbs_down_count'], comment['author'], comment['created_on']) 
+			query = sql_string.format(comment['comment_id'], comment['yahoo_uuid'], comment['article_headline'], comment['article_url'], comment['comment_text'], comment['reply_count'], comment['thumbs_up_count'], comment['thumbs_down_count'], comment['author'], comment['created_on']) 
 			print "EXECUTING: " + comment['comment_id']
 			cursor.execute(query)
+
+		# save shit
+		cursor.close()
+		conn.commit()
+		conn.close()
 	except:
 		print "PROBLEMS CONNECTING TO DATABASE"
 
@@ -75,7 +85,8 @@ def get_yahoo_comments(uuids):
 	comments = {}
 	for uuid in uuids:
 		comments_json = get_yahoo_comments_for_article(uuid)
-		if ('list' in comments_json['data']):
+		if ('data' in comments_json and \
+			'list' in comments_json['data']):
 			for i, comment in enumerate(comments_json['data']['list']):
 				# for whatever reason it's given as an array from Yahoo if it has multiple paragraphs
 				comments_json['data']['list'][i]['content'] = "\n".join(comment['content'])
@@ -89,8 +100,10 @@ def get_yahoo_comments(uuids):
 	return comments
 
 def get_yahoo_comments_for_article(uuid):
-	r = requests.get(YAHOO_COMMENT_SERVICE_URL % uuid)
-	comment_json = json.loads(r.text)
+	first_req = requests.get(YAHOO_COMMENT_SERVICE_URL.format(uuid))
+	comment_json = json.loads(first_req.text)
+
+	# need to do offset 
 	return comment_json
 
 # GET ARTICLE INFORMATION
