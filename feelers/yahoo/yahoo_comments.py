@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import psycopg2 
 from datetime import datetime
-import pdb
+# import pdb
 
 try: 
 	from db_settings import *
@@ -22,11 +22,11 @@ YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/Comment
 def main():
 	print "Getting UUIDs... "
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
-	uuids = {uuids.keys()[2]: uuids[uuids.keys()[2]]}
 	print "Getting comments..."
 	comments = get_yahoo_comments(uuids)
-	print "Database..."
+	print "Uploading to database..."
 	upload_comments_to_database(comments)
+	print "Completed!"
 
 # take whatever is returned from 
 # get_yahoo_comments(uuids) and format for database upload
@@ -112,7 +112,6 @@ def get_yahoo_comments_for_article(uuid):
 			next_comment_json = json.loads(req.text)
 			comment_json['data']['list'].extend(next_comment_json['data']['list'])
 
-		pdb.set_trace()
 		return comment_json
 	else:
 		return {}
