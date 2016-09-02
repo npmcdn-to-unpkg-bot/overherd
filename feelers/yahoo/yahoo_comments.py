@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import psycopg2 
 from datetime import datetime
-# import pdb
+import pdb
 
 try: 
 	from db_settings import *
@@ -22,6 +22,7 @@ YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/Comment
 def main():
 	print "Getting UUIDs... "
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
+	uuids = {uuids.keys()[0]: uuids[uuids.keys()[0]]}
 	print "Getting comments..."
 	comments = get_yahoo_comments(uuids)
 	print "Uploading to database..."
@@ -35,6 +36,8 @@ def upload_comments_to_database(comments):
 	# prepare comments for database 
 	comments_for_database_upload = []
 	for uuid in comments:
+		if not ('data' in comments[uuid]['comments']):
+			pdb.set_trace()
 		article_comments_data = comments[uuid]['comments']['data']
 		if "list" in article_comments_data:
 			for comment_json in article_comments_data['list']:
@@ -84,22 +87,28 @@ def upload_comments_to_database(comments):
 # take in a dictionary of {uuid => {title, url}}
 # return dictionary of {uuid => {"article_headline": headline, "url": url, "comments": comment_json}}
 def get_yahoo_comments(uuids):
-	comments = {}
+	all_comments = {}
+	print "%d articles to process" % len(uuids)
 	for uuid in uuids:
 		comments_json = get_yahoo_comments_for_article(uuid)
+
+		# if there is a list of comments, 
+		# convert each comment into a string 
 		if ('data' in comments_json and \
-			'list' in comments_json['data']):
+			'list' in comments_json['data']): 
 			for i, comment in enumerate(comments_json['data']['list']):
 				# for whatever reason it's given as an array from Yahoo if it has multiple paragraphs
 				comments_json['data']['list'][i]['content'] = "\n".join(comment['content'])
+		else: # otherwise, initialize an empty list
+			comments_json['data'] = []
 
-		comments[uuid] = {
+		all_comments[uuid] = {
 			"article_headline": uuids[uuid]['title'], 
 			"article_url": uuids[uuid]['url'],
 			"comments": comments_json
 		}
 		
-	return comments
+	return all_comments
 
 def get_yahoo_comments_for_article(uuid):
 	first_req = requests.get(YAHOO_COMMENT_SERVICE_URL.format(uuid, 0))
@@ -107,6 +116,7 @@ def get_yahoo_comments_for_article(uuid):
 
 	# go by 100s
 	num_comments = comment_json['data']['count']
+	print "%d comments for %s " % (num_comments, uuid)
 	if (num_comments):
 		end = ((num_comments / 100) + 1) * 100
 		for offset in range(100, end, 100):
