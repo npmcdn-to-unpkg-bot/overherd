@@ -17,12 +17,12 @@ except:
 	DB_DATABASE = os.environ['DB_DATABASE']
 
 YAHOO_NEWS_URLS = ["https://www.yahoo.com/news/"]
-YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/CommentsService.comments;count=10;publisher=news-en-US;sortBy=highestRated;uuid={}?bkt=Headline-Testing-Control&dev_info=0&device=desktop&intl=us&lang=en-US&partner=none&region=US&site=fp&tz=America%2FLos_Angeles&ver=2.0.1738001&returnMeta=true'
+YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/CommentsService.comments;count=100;publisher=news-en-US;sortBy=highestRated;uuid={}?bkt=Headline-Testing-Control&dev_info=0&device=desktop&intl=us&lang=en-US&partner=none&region=US&site=fp&tz=America%2FLos_Angeles&ver=2.0.1738001&returnMeta=true&offset={}'
 
 def main():
 	print "Getting UUIDs... "
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
-	uuids = {uuids.keys()[10]: uuids[uuids.keys()[10]]}
+	uuids = {uuids.keys()[2]: uuids[uuids.keys()[2]]}
 	print "Getting comments..."
 	comments = get_yahoo_comments(uuids)
 	print "Database..."
@@ -100,11 +100,22 @@ def get_yahoo_comments(uuids):
 	return comments
 
 def get_yahoo_comments_for_article(uuid):
-	first_req = requests.get(YAHOO_COMMENT_SERVICE_URL.format(uuid))
+	first_req = requests.get(YAHOO_COMMENT_SERVICE_URL.format(uuid, 0))
 	comment_json = json.loads(first_req.text)
 
-	# need to do offset 
-	return comment_json
+	# go by 100s
+	num_comments = comment_json['data']['count']
+	if (num_comments):
+		end = ((num_comments / 100) + 1) * 100
+		for offset in range(100, end, 100):
+			req = requests.get(YAHOO_COMMENT_SERVICE_URL.format(uuid, offset))
+			next_comment_json = json.loads(req.text)
+			comment_json['data']['list'].extend(next_comment_json['data']['list'])
+
+		pdb.set_trace()
+		return comment_json
+	else:
+		return {}
 
 # GET ARTICLE INFORMATION
 def get_uuids(yahoo_link):
