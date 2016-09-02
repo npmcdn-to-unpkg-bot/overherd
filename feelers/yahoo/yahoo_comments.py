@@ -70,6 +70,8 @@ def upload_comments_to_database(comments):
 			print "EXECUTING: " + comment['comment_id']
 			cursor.execute(query)
 
+		print "Processed %d comments." % len(comments_for_database_upload)
+
 		# save shit
 		cursor.close()
 		conn.commit()
