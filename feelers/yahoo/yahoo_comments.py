@@ -22,7 +22,6 @@ YAHOO_COMMENT_SERVICE_URL = 'https://www.yahoo.com/news/_td/api/resource/Comment
 def main():
 	print "Getting UUIDs... "
 	uuids = get_uuids(YAHOO_NEWS_URLS[0])
-	uuids = {uuids.keys()[0]: uuids[uuids.keys()[0]]}
 	print "Getting comments..."
 	comments = get_yahoo_comments(uuids)
 	print "Uploading to database..."
