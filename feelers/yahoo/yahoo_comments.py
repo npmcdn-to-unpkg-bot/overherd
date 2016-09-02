@@ -36,8 +36,7 @@ def upload_comments_to_database(comments):
 	# prepare comments for database 
 	comments_for_database_upload = []
 	for uuid in comments:
-		if not ('data' in comments[uuid]['comments']):
-			pdb.set_trace()
+		# if not ('data' in comments[uuid]['comments']): pdb.set_trace()
 		article_comments_data = comments[uuid]['comments']['data']
 		if "list" in article_comments_data:
 			for comment_json in article_comments_data['list']:
